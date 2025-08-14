@@ -27,6 +27,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final appState = Provider.of<AppState>(context);
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Widgets Helper',
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),

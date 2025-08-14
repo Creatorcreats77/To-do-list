@@ -142,7 +142,6 @@ class AppState extends ChangeNotifier {
 
   void toggleTheme() {
     if (themeMode == ThemeMode.light) themeMode = ThemeMode.dark;
-    else if (themeMode == ThemeMode.dark) themeMode = ThemeMode.system;
     else themeMode = ThemeMode.light;
     notifyListeners();
   }
