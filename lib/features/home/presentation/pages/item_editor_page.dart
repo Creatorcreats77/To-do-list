@@ -12,19 +12,17 @@ class ItemEditorDialog extends StatefulWidget {
 }
 
 class _ItemEditorDialogState extends State<ItemEditorDialog> {
-  final _formKey = GlobalKey<FormState>();
+  // final _formKey = GlobalKey<FormState>();
   late String _title;
-  late String _type;
-  String _label = '';
-  late String _code;
+  late String _text;
+  // late int _isDone = 0;
 
   @override
   void initState() {
     super.initState();
     _title = widget.item?.title ?? '';
-    _type = widget.item?.type ?? 'button';
-    _label = widget.item?.props['label'] ?? '';
-    _code = widget.item?.code ?? '';
+    _text = widget.item?.text ?? '';
+    // _isDone = widget.item?.isDone ?? 0;
   }
 
   @override
@@ -32,49 +30,29 @@ class _ItemEditorDialogState extends State<ItemEditorDialog> {
     return AlertDialog(
       title: Text(widget.item == null ? 'New item' : 'Edit item'),
       content: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
+        child: Column(
             children: [
               TextFormField(initialValue: _title, decoration: InputDecoration(labelText: 'Title'), onSaved: (v) => _title = v ?? ''),
               SizedBox(height: 8),
-              DropdownButtonFormField<String>(
-                value: _type,
-                items: ['button', 'action', 'rule', 'design', 'other'].map((t) => DropdownMenuItem(child: Text(t), value: t)).toList(),
-                onChanged: (v) => setState(() => _type = v ?? 'button'),
-                decoration: InputDecoration(labelText: 'Type'),
-              ),
-              SizedBox(height: 8),
-              if (_type == 'button')
-                TextFormField(initialValue: _label, decoration: InputDecoration(labelText: 'Button label'), onSaved: (v) => _label = v ?? ''),
-              SizedBox(height: 12),
-              TextFormField(
-                initialValue: _code,
-                decoration: InputDecoration(labelText: 'Code (Dart/Flutter)'),
-                maxLines: 8,
-                onSaved: (v) => _code = v ?? '',
-              ),
+              TextFormField(initialValue: _text, decoration: InputDecoration(labelText: 'Text'), onSaved: (v) => _text = v ?? ''),
             ],
           ),
         ),
-      ),
       actions: [
         TextButton(onPressed: () => Navigator.pop(context), child: Text('Cancel')),
         ElevatedButton(
           onPressed: () async {
-            _formKey.currentState!.save();
+            print("titleeeeeeee: $_title");
             final now = DateTime.now().toIso8601String();
-            final props = _type == 'button' ? {'label': _label} : {};
             final newItem = ItemModel(
               id: widget.item?.id,
               categoryId: widget.categoryId,
               title: _title,
-              type: _type,
-              props: props,
-              code: _code,
+              text: _text,
               createdAt: widget.item?.createdAt ?? now,
             );
             await widget.onSaved(newItem);
+            print("New Item is this : $newItem");
             Navigator.pop(context);
           },
           child: Text('Save'),

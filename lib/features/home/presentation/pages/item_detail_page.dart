@@ -22,13 +22,13 @@ class ItemDetailPage extends StatelessWidget {
           Expanded(
             child: SingleChildScrollView(
               padding: EdgeInsets.all(12),
-              child: HighlightView(
-                item.code.isEmpty ? '// No code provided' : item.code,
-                language: 'dart',
-                theme: githubTheme,
-                padding: EdgeInsets.all(12),
-                textStyle: TextStyle(fontFamily: 'monospace', fontSize: 13),
-              ),
+              // child: HighlightView(
+              //   item.code.isEmpty ? '// No code provided' : item.code,
+              //   language: 'dart',
+              //   theme: githubTheme,
+              //   padding: EdgeInsets.all(12),
+              //   textStyle: TextStyle(fontFamily: 'monospace', fontSize: 13),
+              // ),
             ),
           ),
         ],

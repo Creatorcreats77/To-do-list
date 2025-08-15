@@ -18,7 +18,7 @@ class DBHelper {
       await db.execute('''
         CREATE TABLE categories(
           id INTEGER PRIMARY KEY AUTOINCREMENT,
-          name TEXT UNIQUE
+          name TEXT 
         )
       ''');
       await db.execute('''
@@ -26,14 +26,10 @@ class DBHelper {
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           categoryId INTEGER,
           title TEXT,
-          type TEXT,
-          props TEXT,
-          code TEXT,
+          text TEXT,
           createdAt TEXT
         )
       ''');
-      // Insert a default category
-      await db.insert('categories', {'name': 'Buttons'});
     });
   }
 
@@ -61,6 +57,7 @@ class DBHelper {
   }
 
   Future<int> insertItem(ItemModel item) async {
+    print("item to map  aaaaaaaaaaaaaaaaaa: ${item.toMap()}");
     final db = _db!;
     return await db.insert('items', item.toMap());
   }
@@ -127,6 +124,7 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> addOrUpdateItem(ItemModel item) async {
+    print("weeeeeeeeeeeeeeeee: ${item.id}");
     if (item.id == null) {
       await DBHelper.instance.insertItem(item);
     } else {

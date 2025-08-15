@@ -165,6 +165,7 @@ class _HomePageState extends State<HomePage> {
                                 label: Text('Add item'),
                                 onPressed: () {
                                   if (app.selectedCategoryId == null) return;
+                                  print(app.selectedCategoryId!);
                                   showDialog(
                                     context: context,
                                     builder: (_) => ItemEditorDialog(
@@ -227,8 +228,6 @@ class _HomePageState extends State<HomePage> {
                                                 context,
                                               ).textTheme.titleMedium,
                                             ),
-                                            SizedBox(height: 8),
-                                            Text('Type: ${it.type}'),
                                             Spacer(),
                                             Row(
                                               mainAxisAlignment:
