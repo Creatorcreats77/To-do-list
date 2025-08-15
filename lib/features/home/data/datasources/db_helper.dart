@@ -13,7 +13,7 @@ class DBHelper {
   Future<void> init() async {
     if (_db != null) return;
     final databasesPath = await getDatabasesPath();
-    final path = join(databasesPath, 'widget_helper.db');
+    final path = join(databasesPath, 'widget_helpe.db');
     _db = await openDatabase(path, version: 1, onCreate: (db, version) async {
       await db.execute('''
         CREATE TABLE categories(
@@ -27,6 +27,7 @@ class DBHelper {
           categoryId INTEGER,
           title TEXT,
           text TEXT,
+          isDone INTEGER,
           createdAt TEXT
         )
       ''');
@@ -65,6 +66,16 @@ class DBHelper {
   Future<int> updateItem(ItemModel item) async {
     final db = _db!;
     return await db.update('items', item.toMap(), where: 'id = ?', whereArgs: [item.id]);
+  }
+
+  Future<int> updateIsDone(int id, int isDone) async {
+    final db = _db!;
+    return await db.update(
+      'items',
+      {'isDone': isDone}, // only update this field
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 
   Future<int> deleteItem(int id) async {
@@ -124,7 +135,7 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> addOrUpdateItem(ItemModel item) async {
-    print("weeeeeeeeeeeeeeeee: ${item.id}");
+    print("weeeeeeeeeeeeeeeee: ${item.toMap()}");
     if (item.id == null) {
       await DBHelper.instance.insertItem(item);
     } else {
@@ -135,6 +146,10 @@ class AppState extends ChangeNotifier {
 
   Future<void> deleteItem(int id) async {
     await DBHelper.instance.deleteItem(id);
+    await loadItems();
+  }
+  Future<void> updatingIsDone(int id, int isDone) async{
+    await DBHelper.instance.updateIsDone(id, isDone);
     await loadItems();
   }
 
