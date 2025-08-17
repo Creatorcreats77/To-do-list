@@ -7,31 +7,41 @@ import '../models/item_model.dart';
 
 class DBHelper {
   DBHelper._private();
+
   static final DBHelper instance = DBHelper._private();
   Database? _db;
 
   Future<void> init() async {
     if (_db != null) return;
     final databasesPath = await getDatabasesPath();
-    final path = join(databasesPath, 'widget_helpe.db');
-    _db = await openDatabase(path, version: 1, onCreate: (db, version) async {
-      await db.execute('''
+    final path = join(databasesPath, 'widget_helperr.db');
+    _db = await openDatabase(
+      path,
+      version: 1,
+      onCreate: (db, version) async {
+        await db.execute('''
         CREATE TABLE categories(
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          id INTEGER PRIMARY KEY ,
           name TEXT 
         )
       ''');
-      await db.execute('''
+        await db.execute('''
         CREATE TABLE items(
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          id INTEGER PRIMARY KEY,
           categoryId INTEGER,
           title TEXT,
           text TEXT,
           isDone INTEGER,
-          createdAt TEXT
+          createdAt TEXT,
+          
+          reminderAt TEXT,        -- ISO string for one-time reminder
+          repeatDays TEXT,        -- JSON string for repeat days ["Mon","Wed"]
+          reminderTime TEXT       -- HH:mm for repeated reminders
+    
         )
       ''');
-    });
+      },
+    );
   }
 
   Future<List<Category>> getCategories() async {
@@ -47,7 +57,12 @@ class DBHelper {
 
   Future<int> updateCategory(Category c) async {
     final db = _db!;
-    return await db.update('categories', c.toMap(), where: 'id = ?', whereArgs: [c.id]);
+    return await db.update(
+      'categories',
+      c.toMap(),
+      where: 'id = ?',
+      whereArgs: [c.id],
+    );
   }
 
   Future<int> deleteCategory(int id) async {
@@ -65,7 +80,12 @@ class DBHelper {
 
   Future<int> updateItem(ItemModel item) async {
     final db = _db!;
-    return await db.update('items', item.toMap(), where: 'id = ?', whereArgs: [item.id]);
+    return await db.update(
+      'items',
+      item.toMap(),
+      where: 'id = ?',
+      whereArgs: [item.id],
+    );
   }
 
   Future<int> updateIsDone(int id, int isDone) async {
@@ -85,7 +105,12 @@ class DBHelper {
 
   Future<List<ItemModel>> getItemsByCategory(int categoryId) async {
     final db = _db!;
-    final rows = await db.query('items', where: 'categoryId = ?', whereArgs: [categoryId], orderBy: 'createdAt DESC');
+    final rows = await db.query(
+      'items',
+      where: 'categoryId = ?',
+      whereArgs: [categoryId],
+      orderBy: 'createdAt DESC',
+    );
     return rows.map((r) => ItemModel.fromMap(r)).toList();
   }
 }
@@ -125,7 +150,8 @@ class AppState extends ChangeNotifier {
 
   Future<void> deleteCategory(int id) async {
     await DBHelper.instance.deleteCategory(id);
-    if (selectedCategoryId == id) selectedCategoryId = categories.isNotEmpty ? categories.first.id : null;
+    if (selectedCategoryId == id)
+      selectedCategoryId = categories.isNotEmpty ? categories.first.id : null;
     await loadAll();
   }
 
@@ -148,14 +174,17 @@ class AppState extends ChangeNotifier {
     await DBHelper.instance.deleteItem(id);
     await loadItems();
   }
-  Future<void> updatingIsDone(int id, int isDone) async{
+
+  Future<void> updatingIsDone(int id, int isDone) async {
     await DBHelper.instance.updateIsDone(id, isDone);
     await loadItems();
   }
 
   void toggleTheme() {
-    if (themeMode == ThemeMode.light) themeMode = ThemeMode.dark;
-    else themeMode = ThemeMode.light;
+    if (themeMode == ThemeMode.light)
+      themeMode = ThemeMode.dark;
+    else
+      themeMode = ThemeMode.light;
     notifyListeners();
   }
 }
